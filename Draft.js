@@ -16,6 +16,9 @@ const sortCards = (cards) => {
   })
 }
 
+const NUM_PACKS = 5
+const NUM_CARDS = 11
+
 module.exports = {
   cube: shuffleDeck(cube),
 
@@ -26,19 +29,30 @@ module.exports = {
   startDraft: (numPlayers) => {
     const packs = []
     const pools = []
+    const picked = []
 
     const shuffledCube = shuffleDeck(cube)
 
     for (let i = 0; i < numPlayers; i++) {
-      const playerPacks = [
-        shuffledCube.slice(i * 60, i * 60 + 15),
-        shuffledCube.slice(i * 60 + 15, i * 60 + 30),
-        shuffledCube.slice(i * 60 + 30, i * 60 + 45),
-        shuffledCube.slice(i * 60 + 45, i * 60 + 60),
-      ]
-      packs.push(playerPacks)
+      packs.push([])
+      for (let j = 0; j < NUM_PACKS; j++) {
+        packs[i].push(
+          shuffledCube.slice(
+            j * NUM_CARDS + i * (NUM_CARDS * NUM_PACKS),
+            (j + 1) * NUM_CARDS + i * (NUM_CARDS * NUM_PACKS)
+          )
+        )
+      }
       pools.push([])
+      picked.push(false)
     }
-    return { currentPack: 0, packs: packs, pools: pools }
+    return {
+      currentPack: 0,
+      packs: packs,
+      pools: pools,
+      picked,
+      lastPack: NUM_PACKS - 1,
+      completed: false,
+    }
   },
 }

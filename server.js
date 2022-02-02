@@ -70,6 +70,66 @@ io.on('connection', (socket) => {
 
     io.to(roomName).emit('draft update', Room[roomIndex].gameState)
   })
+
+  socket.on(
+    'pick card',
+    ({ card, playerIndex, draft, roomName, cardIndex }) => {
+      draft.pools[playerIndex].push(card)
+
+      draft.packs[playerIndex][draft.currentPack].splice(cardIndex, 1)
+
+      draft.picked[playerIndex] = true
+
+      const checker = draft.picked.includes(false)
+      if (!checker) {
+        //check if packs are finished
+        if (draft.packs[playerIndex][draft.currentPack].length == 0) {
+          if (draft.currentPack == draft.lastPack) {
+            console.log('draft done')
+            draft.completed = true
+          } else {
+            draft.currentPack++
+            console.log('next pack')
+          }
+        } else {
+          //pass packs around
+          if (draft.currentPack % 2 == 0) {
+            //clockwise
+            const endPack = draft.packs.pop()
+            draft.packs.unshift(endPack)
+          } else {
+            const endPack = draft.packs.shift()
+            draft.packs.push(endPack)
+          }
+        }
+        draft.picked.fill(false)
+      }
+
+      io.to(roomName).emit('draft update', draft)
+    }
+  )
+
+  socket.on('export deck', ({ draft, playerIndex }) => {
+    const ydk = draft.pools[playerIndex].map((card) => card.id)
+    ydk.unshift('#main')
+    ydk.unshift('#created by ...')
+    ydk.push('#extra')
+    ydk.push('63519819')
+    ydk.push('63519819')
+    ydk.push('!side')
+
+    require('fs').writeFile(
+      './public/draft.ydk',
+      ydk.join('\n') + '\n',
+      (err) => {
+        if (err) {
+          console.error('Crap happens')
+        }
+      }
+    )
+
+    socket.emit('deck exported', ydk.join('\n') + '\n')
+  })
 })
 
 const PORT = process.env.PORT || 5000

@@ -17,6 +17,8 @@ export default function Room({ socket, room, setRoom, cube }) {
     socket.on('draft update', (data) => {
       setDraft(data)
     })
+
+    socket.on('deck exported', (data) => console.log(data))
   }, [socket])
 
   return (
@@ -26,22 +28,29 @@ export default function Room({ socket, room, setRoom, cube }) {
             */}
 
       {draft ? (
-        <Draft socket={socket} draft={draft} playerIndex={playerIndex} />
+        <Draft
+          socket={socket}
+          draft={draft}
+          playerIndex={playerIndex}
+          room={room}
+        />
       ) : (
         <div className="flex flex-col items-center gap-5">
-          <div className="font-mono text-5xl text-white">LOBBY</div>
+          <div className="font-serif text-5xl text-white">LOBBY</div>
           <ul className="list-disc font-mono text-2xl text-white">
             {userList.map((id) => (
-              <li>{id == socket.id ? `${id} (you)` : id}</li>
+              <li key={id}>{id == socket.id ? `${id} (you)` : id}</li>
             ))}
           </ul>
           {userList[0] == socket.id ? (
-            <button
-              onClick={() => socket.emit('start draft', room)}
-              className="rounded-md border-2 border-solid p-2 font-mono text-sm text-white hover:bg-cape"
-            >
-              Start Draft
-            </button>
+            <div>
+              <button
+                onClick={() => socket.emit('start draft', room)}
+                className="rounded-md border-2 border-solid p-2 font-mono text-sm text-white hover:bg-cape"
+              >
+                Start Draft
+              </button>
+            </div>
           ) : (
             <div className="font-mono text-sm text-white">
               Waiting for Host to Start...

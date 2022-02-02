@@ -28,7 +28,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const newSocket = io(`http://localhost:5000`)
+    const newSocket = io(`https://yugi-draft.herokuapp.com/`)
     setSocket(newSocket)
 
     /*
