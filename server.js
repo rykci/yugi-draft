@@ -61,6 +61,15 @@ io.on('connection', (socket) => {
   })
 
   socket.on('disconnect', () => {
+    let roomIndex = Room.findIndex((room) => room.users.includes(socket.id))
+
+    if (roomIndex >= 0) {
+      console.log(`${socket.id} left room ${Room[roomIndex].name}`)
+      Room[roomIndex].users = Room[roomIndex].users.filter(
+        (id) => id != socket.id
+      )
+    }
+
     console.log(`${socket.id} disconnected`)
   })
 
