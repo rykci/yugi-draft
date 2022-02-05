@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
 
 export default function Draft({ socket, draft, playerIndex, room }) {
   const [bigCard, setBigCard] = useState(
     draft.packs[playerIndex][draft.currentPack][0]
   )
+  const [blob, setBlob] = useState(new Blob())
 
   useEffect(() => {
     if (draft.completed) {
       socket.emit('export deck', { draft, playerIndex })
     }
   }, [draft?.completed])
+
+  useEffect(() => {
+    socket.on('deck exported', (data) => {
+      console.log(data)
+      setBlob(new Blob([data], { type: 'text/plain' }))
+    })
+  }, [socket])
 
   return (
     <div className="h-screen overflow-auto">
@@ -73,9 +80,9 @@ export default function Draft({ socket, draft, playerIndex, room }) {
         <div className="flex  justify-center">
           {draft.completed ? (
             <div className=" rounded-md border-2 border-solid border-cape p-2 font-mono text-white hover:bg-cape">
-              <Link href="/draft.ydk" target="_blank" download>
+              <a href={URL.createObjectURL(blob)} download>
                 Export Deck
-              </Link>
+              </a>
             </div>
           ) : (
             <></>

@@ -5,7 +5,6 @@ export default function Room({ socket, room, setRoom, cube }) {
   const [userList, setUserList] = useState([socket.id])
   const [draft, setDraft] = useState()
   const [playerIndex, setPlayerIndex] = useState(0)
-  const [list, setList] = useState()
 
   useEffect(() => {
     socket.emit('join room', { id: socket.id, roomName: room })
@@ -17,11 +16,6 @@ export default function Room({ socket, room, setRoom, cube }) {
 
     socket.on('draft update', (data) => {
       setDraft(data)
-    })
-
-    socket.on('deck exported', (data) => {
-      setList(data)
-      console.log(data)
     })
   }, [socket])
 
