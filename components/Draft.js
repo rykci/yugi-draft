@@ -31,8 +31,8 @@ export default function Draft({ socket, draft, playerIndex, room }) {
             <img src={bigCard?.card_images[0].image_url} />
           </div>
 
-          <div className="grid grid-cols-10 overflow-auto  border-2 border-solid border-indigo-400 bg-slate-300">
-            {[...new Array(60)].map((none, i) => (
+          <div className="grid grid-cols-11 overflow-auto  border-2 border-solid border-indigo-400 bg-slate-300">
+            {[...new Array(55)].map((none, i) => (
               <div
                 className="border-2 border-solid border-indigo-400 p-1 "
                 key={i}
